@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
-use dioxus::html::geometry::ElementPoint;
 use dioxus::prelude::*;
+use dioxus::html::geometry::ElementPoint;
 use plotters_dioxus::{ Plotters, DioxusDrawingArea };
-use plotters::{ define_color, doc, coord::{ ReverseCoordTranslate }, prelude::* };
+use plotters::{ define_color, doc, coord::ReverseCoordTranslate, prelude::* };
 
 define_color!(BACKGROUND, 11, 20, 31, "background");
 define_color!(ITEM, 57, 90, 131, "item");
@@ -12,7 +12,7 @@ use rand_distr::{ Distribution, Normal };
 use rand_xorshift::XorShiftRng;
 
 fn main() {
-    dioxus_desktop::launch(App);
+    dioxus_desktop::launch::launch(App, Vec::new(), Vec::new());
 }
 
 fn draw_scatter_plot(
@@ -84,18 +84,18 @@ fn draw_scatter_plot(
         );
 }
 
-fn App<'a>(cx: Scope<'a>) -> Element {
-    let click_coord_state = use_state(cx, ElementPoint::default);
-    let x_axis_scale_state = use_state(cx, || 1.0f64);
+fn App() -> Element {
+    let mut click_coord_state = use_signal(ElementPoint::default);
+    let mut x_axis_scale_state = use_signal(|| 1.0f64);
 
-    render!(Plotters {
+    rsx!(Plotters {
         size: (400, 400),
-        init: move |d| draw_scatter_plot(d, **click_coord_state, **x_axis_scale_state),
-        on_click: |e: Event<MouseData>| click_coord_state.set(e.element_coordinates()),
-        on_wheel: |e: Event<WheelData>|
+        init: move |d| draw_scatter_plot(d, click_coord_state(), x_axis_scale_state()),
+        on_click: move |e: Event<MouseData>| click_coord_state.set(e.element_coordinates()),
+        on_wheel: move |e: Event<WheelData>|
             x_axis_scale_state.set(
                 (
-                    **x_axis_scale_state +
+                    x_axis_scale_state() +
                     (if e.delta().strip_units().y > 0.0 { -0.1 } else { 0.1 })
                 ).max(0.01)
             ),
