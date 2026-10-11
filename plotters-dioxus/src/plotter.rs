@@ -4,13 +4,13 @@ use dioxus::prelude::*;
 
 use plotters_bitmap::BitMapBackend;
 
-use plotters::prelude::*;
 use plotters::coord::Shift;
+use plotters::prelude::*;
 
 use base64::prelude::*;
 
-use image::ImageEncoder;
 use image::codecs::png::PngEncoder;
+use image::ImageEncoder;
 
 use std::io::Cursor;
 
@@ -41,18 +41,17 @@ pub struct PlottersProps<F: Fn(DioxusDrawingArea) + Clone + 'static> {
 }
 
 impl<F: Fn(DioxusDrawingArea) + Clone + 'static> PartialEq for PlottersProps<F> {
-    fn eq(&self, other: &PlottersProps<F>) -> bool {
-        self.size == other.size
+    fn eq(&self, _other: &PlottersProps<F>) -> bool {
+        // force rerender for now
+        false
     }
 }
 
 pub fn Plotters<F: Fn(DioxusDrawingArea) + Clone + 'static>(props: PlottersProps<F>) -> Element {
     let buffer_size = ((props.size.1 * props.size.0) as usize) * 3usize;
     let mut buffer = vec![0u8; buffer_size];
-    let drawing_area = BitMapBackend::with_buffer(
-        buffer.as_mut_slice(),
-        props.size
-    ).into_drawing_area();
+    let drawing_area =
+        BitMapBackend::with_buffer(buffer.as_mut_slice(), props.size).into_drawing_area();
     (props.init)(drawing_area);
 
     let mut data = vec![0; 0];
@@ -70,83 +69,83 @@ pub fn Plotters<F: Fn(DioxusDrawingArea) + Clone + 'static>(props: PlottersProps
         onclick: move |e| {
             if let Some(callback) = props.on_click.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondoubleclick: move |e| {
             if let Some(callback) = props.on_dblclick.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onmousemove: move |e| {
             if let Some(callback) = props.on_mousemove.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onmousedown: move |e| {
             if let Some(callback) = props.on_mousedown.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onmouseup: move |e| {
             if let Some(callback) = props.on_mouseup.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onmouseout: move |e| {
             if let Some(callback) = props.on_mouseout.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onmouseover: move |e| {
             if let Some(callback) = props.on_mouseover.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onwheel: move |e| {
             if let Some(callback) = props.on_wheel.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         draggable: props.draggable,
         ondrag: move |e| {
             if let Some(callback) = props.on_drag.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondragend: move |e| {
             if let Some(callback) = props.on_dragend.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondragenter: move |e| {
             if let Some(callback) = props.on_dragenter.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondragleave: move |e| {
             if let Some(callback) = props.on_dragleave.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondragover: move |e| {
             if let Some(callback) = props.on_dragover.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondragstart: move |e| {
             if let Some(callback) = props.on_dragstart.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         ondrop: move |e| {
             if let Some(callback) = props.on_drop.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         onscroll: move |e| {
             if let Some(callback) = props.on_scroll.as_ref() {
                 callback.call(e)
-            };
+            }
         },
         src: "data:image/png;base64,{buffer_base64}",
     })
